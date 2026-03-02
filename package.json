@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/rjhall90/jcli-dc.git"
+    "url": "git+https://github.com/rjhall90/jcli-dc.git"
   },
   "homepage": "https://github.com/rjhall90/jcli-dc#readme",
   "bugs": {
