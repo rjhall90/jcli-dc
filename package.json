@@ -1,0 +1,51 @@
+{
+  "name": "jcli-dc",
+  "version": "1.0.0",
+  "description": "Lightweight CLI for Jira Data Center — issue search, sprint management, and more via PAT auth",
+  "license": "MIT",
+  "author": "Robert Hall <robert.hall@sscinc.com>",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "bin": {
+    "jcli": "dist/index.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rjhall90/jcli-dc.git"
+  },
+  "homepage": "https://github.com/rjhall90/jcli-dc#readme",
+  "bugs": {
+    "url": "https://github.com/rjhall90/jcli-dc/issues"
+  },
+  "keywords": [
+    "jira",
+    "jira-data-center",
+    "cli",
+    "atlassian",
+    "devtools"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc && node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "commander": "14.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "25.3.3",
+    "typescript": "5.9.3"
+  }
+}
