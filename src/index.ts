@@ -6,6 +6,7 @@ import { registerIssueCommands } from "./commands/issue.js";
 import { registerSprintCommands } from "./commands/sprint.js";
 import { registerReleaseCommands } from "./commands/release.js";
 import { registerStatusCommands } from "./commands/status.js";
+import { registerEpicCommands } from "./commands/epic.js";
 
 const program = new Command();
 
@@ -26,6 +27,7 @@ Examples:
   $ jcli issue search "status = 'In Progress' AND project = PROJ"
   $ jcli issue transition PROJ-123 "In Progress"    # transition by name
   $ jcli sprint boards --name "My Board"
+  $ jcli epic list 42                               # epics on a board
   $ jcli release list PROJ                           # project versions/releases
   $ jcli status list                                 # all workflow statuses
 
@@ -39,6 +41,7 @@ registerIssueCommands(program);
 registerSprintCommands(program);
 registerReleaseCommands(program);
 registerStatusCommands(program);
+registerEpicCommands(program);
 
 program.parseAsync(process.argv).catch((err) => {
   console.error("Fatal error:", err.message);

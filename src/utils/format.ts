@@ -1,4 +1,4 @@
-import type { JiraIssue, JiraVersion, JiraStatus, JiraStatusCategory } from "./client.js";
+import type { JiraIssue, JiraVersion, JiraStatus, JiraStatusCategory, JiraEpic } from "./client.js";
 
 export function formatJson(data: unknown): string {
   return JSON.stringify(data, null, 2);
@@ -131,4 +131,29 @@ export function formatStatusCategoryList(categories: JiraStatusCategory[]): stri
       colorName: c.colorName,
     }))
   );
+}
+
+export function formatEpicList(epics: JiraEpic[]): string {
+  return formatJson(
+    epics.map((e) => ({
+      id: e.id,
+      key: e.key,
+      name: e.name,
+      summary: e.summary,
+      done: e.done,
+      color: e.color?.key ?? "",
+    }))
+  );
+}
+
+export function formatEpicDetail(epic: JiraEpic): string {
+  return formatJson({
+    id: epic.id,
+    key: epic.key,
+    name: epic.name,
+    summary: epic.summary,
+    done: epic.done,
+    color: epic.color?.key ?? "",
+    self: epic.self,
+  });
 }

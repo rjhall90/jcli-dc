@@ -187,7 +187,39 @@ export class JiraClient {
     return this.request<JiraStatusCategory[]>("api/2/statuscategory");
   }
 
-  // Agile API
+  // Agile API — Epics
+  async getBoardEpics(
+    boardId: number,
+    opts: { done?: boolean; maxResults?: number; startAt?: number } = {}
+  ): Promise<PaginatedResponse<JiraEpic>> {
+    return this.request(`agile/1.0/board/${boardId}/epic`, {
+      query: {
+        done: opts.done,
+        maxResults: opts.maxResults ?? 50,
+        startAt: opts.startAt ?? 0,
+      },
+    });
+  }
+
+  async getEpic(epicIdOrKey: string): Promise<JiraEpic> {
+    return this.request<JiraEpic>(`agile/1.0/epic/${epicIdOrKey}`);
+  }
+
+  async getEpicIssues(
+    epicIdOrKey: string,
+    opts: { jql?: string; fields?: string; maxResults?: number; startAt?: number } = {}
+  ): Promise<SprintIssuesResponse> {
+    return this.request(`agile/1.0/epic/${epicIdOrKey}/issue`, {
+      query: {
+        jql: opts.jql,
+        fields: opts.fields,
+        maxResults: opts.maxResults ?? 50,
+        startAt: opts.startAt ?? 0,
+      },
+    });
+  }
+
+  // Agile API — Boards & Sprints
   async getBoards(
     opts: { name?: string; maxResults?: number; startAt?: number } = {}
   ): Promise<PaginatedResponse<JiraBoard>> {
@@ -379,4 +411,14 @@ export interface SprintIssuesResponse {
   startAt: number;
   total: number;
   issues: JiraIssue[];
+}
+
+export interface JiraEpic {
+  id: number;
+  key: string;
+  name: string;
+  summary: string;
+  done: boolean;
+  color: { key: string };
+  self: string;
 }
