@@ -11,10 +11,10 @@ export function registerReleaseCommands(program: Command): void {
       "after",
       `
 Examples:
-  $ jcli release list SL                              # all versions for project SL
-  $ jcli release list SL --order releaseDate           # ordered by release date
-  $ jcli release get 86839                             # full version detail
-  $ jcli release issues 86839                          # related & unresolved issue counts
+  $ jcli release list PROJ                             # all versions for a project
+  $ jcli release list PROJ --order releaseDate          # ordered by release date
+  $ jcli release get 12345                              # full version detail
+  $ jcli release issues 12345                           # related & unresolved issue counts
 `
     );
 

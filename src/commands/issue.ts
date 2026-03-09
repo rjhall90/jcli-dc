@@ -17,15 +17,15 @@ export function registerIssueCommands(program: Command): void {
       "after",
       `
 Examples:
-  $ jcli issue mine                                    # your assigned issues
-  $ jcli issue mine --status "In Progress" --project SL # filtered
-  $ jcli issue get SL-3190                             # full detail with comments
-  $ jcli issue get SL-3190 --no-comments               # without comments
-  $ jcli issue search "project = SL AND type = Bug"    # raw JQL
-  $ jcli issue comment SL-3190 "On it"                 # add a comment
-  $ jcli issue transitions SL-3190                     # list available moves
-  $ jcli issue transition SL-3190 "In Progress"        # transition by name
-  $ jcli issue transition SL-3190 31                   # transition by ID
+  $ jcli issue mine                                       # your assigned issues
+  $ jcli issue mine --status "In Progress" --project PROJ  # filtered
+  $ jcli issue get PROJ-123                                # full detail with comments
+  $ jcli issue get PROJ-123 --no-comments                  # without comments
+  $ jcli issue search "project = PROJ AND type = Bug"      # raw JQL
+  $ jcli issue comment PROJ-123 "On it"                    # add a comment
+  $ jcli issue transitions PROJ-123                        # list available moves
+  $ jcli issue transition PROJ-123 "In Progress"           # transition by name
+  $ jcli issue transition PROJ-123 31                      # transition by ID
 `
     );
 
