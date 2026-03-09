@@ -99,6 +99,10 @@ export class JiraClient {
           "issuetype",
           "created",
           "updated",
+          "fixVersions",
+          "resolution",
+          "labels",
+          "comment",
         ],
         maxResults: opts.maxResults ?? 50,
         startAt: opts.startAt ?? 0,
@@ -142,6 +146,45 @@ export class JiraClient {
       method: "PUT",
       body: { name: username },
     });
+  }
+
+  // Version / Release API
+  async getProjectVersions(
+    projectKey: string,
+    opts: { orderBy?: string; maxResults?: number; startAt?: number } = {}
+  ): Promise<ProjectVersionPage> {
+    return this.request<ProjectVersionPage>(`api/2/project/${projectKey}/version`, {
+      query: {
+        orderBy: opts.orderBy,
+        maxResults: opts.maxResults ?? 50,
+        startAt: opts.startAt ?? 0,
+      },
+    });
+  }
+
+  async getVersion(versionId: string): Promise<JiraVersion> {
+    return this.request<JiraVersion>(`api/2/version/${versionId}`);
+  }
+
+  async getVersionRelatedIssueCounts(versionId: string): Promise<VersionIssueCounts> {
+    return this.request<VersionIssueCounts>(`api/2/version/${versionId}/relatedIssueCounts`);
+  }
+
+  async getVersionUnresolvedIssueCount(versionId: string): Promise<VersionUnresolvedCounts> {
+    return this.request<VersionUnresolvedCounts>(`api/2/version/${versionId}/unresolvedIssueCount`);
+  }
+
+  // Status API
+  async getAllStatuses(): Promise<JiraStatus[]> {
+    return this.request<JiraStatus[]>("api/2/status");
+  }
+
+  async getStatus(idOrName: string): Promise<JiraStatus> {
+    return this.request<JiraStatus>(`api/2/status/${encodeURIComponent(idOrName)}`);
+  }
+
+  async getStatusCategories(): Promise<JiraStatusCategory[]> {
+    return this.request<JiraStatusCategory[]>("api/2/statuscategory");
   }
 
   // Agile API
@@ -202,7 +245,11 @@ export interface JiraIssue {
   self: string;
   fields: Record<string, unknown> & {
     summary?: string;
-    status?: { name: string; id: string };
+    status?: {
+      name: string;
+      id: string;
+      statusCategory?: JiraStatusCategory;
+    };
     assignee?: { displayName: string; name: string } | null;
     reporter?: { displayName: string; name: string } | null;
     priority?: { name: string; id: string };
@@ -210,7 +257,20 @@ export interface JiraIssue {
     created?: string;
     updated?: string;
     description?: string;
+    resolution?: { name: string; id: string } | null;
+    labels?: string[];
+    fixVersions?: Array<{
+      id: string;
+      name: string;
+      description?: string;
+      released: boolean;
+      archived: boolean;
+      releaseDate?: string;
+    }>;
     comment?: {
+      maxResults?: number;
+      total?: number;
+      startAt?: number;
       comments: Array<{
         id: string;
         author: { displayName: string };
@@ -233,6 +293,59 @@ export interface JiraTransition {
   id: string;
   name: string;
   to: { name: string; id: string };
+}
+
+export interface JiraVersion {
+  id: string;
+  name: string;
+  description?: string;
+  project?: string;
+  projectId?: number;
+  archived: boolean;
+  released: boolean;
+  overdue?: boolean;
+  startDate?: string;
+  releaseDate?: string;
+  userStartDate?: string;
+  userReleaseDate?: string;
+  self: string;
+}
+
+export interface ProjectVersionPage {
+  maxResults: number;
+  startAt: number;
+  total: number;
+  isLast: boolean;
+  values: JiraVersion[];
+}
+
+export interface VersionIssueCounts {
+  self: string;
+  issuesFixedCount: number;
+  issuesAffectedCount: number;
+  issueCountWithCustomFieldsShowingVersion: number;
+}
+
+export interface VersionUnresolvedCounts {
+  self: string;
+  issuesUnresolvedCount: number;
+}
+
+export interface JiraStatus {
+  id: string;
+  name: string;
+  description: string;
+  iconUrl?: string;
+  statusCategory?: JiraStatusCategory;
+  self: string;
+}
+
+export interface JiraStatusCategory {
+  id: number;
+  key: string;
+  name: string;
+  colorName: string;
+  self?: string;
 }
 
 export interface JiraBoard {
