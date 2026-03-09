@@ -1,6 +1,6 @@
 {
   "name": "jcli-dc",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Lightweight CLI for Jira Data Center — issue search, sprint management, and more via PAT auth",
   "license": "MIT",
   "author": "Robert Hall <robert.hall@sscinc.com>",
@@ -57,7 +57,9 @@
     "typescript": "5.9.3"
   },
   "commitlint": {
-    "extends": ["@commitlint/config-conventional"]
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "release": {
     "branches": [
