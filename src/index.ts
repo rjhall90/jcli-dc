@@ -4,6 +4,8 @@ import { Command } from "commander";
 import { registerConfigCommands } from "./commands/config.js";
 import { registerIssueCommands } from "./commands/issue.js";
 import { registerSprintCommands } from "./commands/sprint.js";
+import { registerReleaseCommands } from "./commands/release.js";
+import { registerStatusCommands } from "./commands/status.js";
 
 const program = new Command();
 
@@ -20,10 +22,12 @@ Getting started:
   $ jcli issue mine
 
 Examples:
-  $ jcli issue get PROJ-123 --comments
+  $ jcli issue get PROJ-123                          # full detail with comments
   $ jcli issue search "status = 'In Progress' AND project = PROJ"
+  $ jcli issue transition PROJ-123 "In Progress"    # transition by name
   $ jcli sprint boards --name "My Board"
-  $ jcli issue mine --status "To Do" --project PROJ
+  $ jcli release list PROJ                           # project versions/releases
+  $ jcli status list                                 # all workflow statuses
 
 All output is JSON. Pipe to jq for filtering:
   $ jcli issue mine | jq '.issues[].key'
@@ -33,6 +37,8 @@ All output is JSON. Pipe to jq for filtering:
 registerConfigCommands(program);
 registerIssueCommands(program);
 registerSprintCommands(program);
+registerReleaseCommands(program);
+registerStatusCommands(program);
 
 program.parseAsync(process.argv).catch((err) => {
   console.error("Fatal error:", err.message);

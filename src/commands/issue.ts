@@ -2,6 +2,12 @@ import { Command } from "commander";
 import { JiraClient } from "../utils/client.js";
 import { formatIssueList, formatIssueDetail, formatJson } from "../utils/format.js";
 
+const DEFAULT_DETAIL_FIELDS = [
+  "summary", "status", "assignee", "reporter", "priority", "issuetype",
+  "created", "updated", "description", "comment", "fixVersions",
+  "resolution", "labels",
+].join(",");
+
 export function registerIssueCommands(program: Command): void {
   const issue = program
     .command("issue")
@@ -13,11 +19,13 @@ export function registerIssueCommands(program: Command): void {
 Examples:
   $ jcli issue mine                                    # your assigned issues
   $ jcli issue mine --status "In Progress" --project SL # filtered
-  $ jcli issue get SL-3190 --comments                  # full detail + comments
+  $ jcli issue get SL-3190                             # full detail with comments
+  $ jcli issue get SL-3190 --no-comments               # without comments
   $ jcli issue search "project = SL AND type = Bug"    # raw JQL
   $ jcli issue comment SL-3190 "On it"                 # add a comment
   $ jcli issue transitions SL-3190                     # list available moves
-  $ jcli issue transition SL-3190 31                   # execute a transition
+  $ jcli issue transition SL-3190 "In Progress"        # transition by name
+  $ jcli issue transition SL-3190 31                   # transition by ID
 `
     );
 
@@ -27,13 +35,14 @@ Examples:
     .description("Get full detail for an issue by key, e.g. jcli issue get PROJ-123")
     .option("--fields <fields>", "Comma-separated list of fields to return")
     .option("--expand <expand>", "Expand additional data (renderedFields, changelog, etc.)")
-    .option("--comments", "Include comments", false)
-    .action(async (issueKey: string, opts: { fields?: string; expand?: string; comments?: boolean }) => {
+    .option("--no-comments", "Exclude comments from output")
+    .action(async (issueKey: string, opts: { fields?: string; expand?: string; comments: boolean }) => {
       try {
         const client = new JiraClient();
-        const fields = opts.comments
-          ? (opts.fields ?? "summary,status,assignee,reporter,priority,issuetype,created,updated,description,comment")
-          : opts.fields;
+        let fields = opts.fields ?? DEFAULT_DETAIL_FIELDS;
+        if (!opts.comments) {
+          fields = fields.split(",").filter((f) => f !== "comment").join(",");
+        }
         const issue = await client.getIssue(issueKey, fields, opts.expand);
         console.log(formatIssueDetail(issue));
       } catch (err) {
@@ -85,7 +94,6 @@ Examples:
     .action(async (opts: { status?: string; max: string; project?: string }) => {
       try {
         const client = new JiraClient();
-        let jql = "assignee = currentUser() ORDER BY updated DESC";
         const conditions: string[] = ["assignee = currentUser()"];
 
         if (opts.status) {
@@ -95,7 +103,7 @@ Examples:
           conditions.push(`project = "${opts.project}"`);
         }
 
-        jql = conditions.join(" AND ") + " ORDER BY updated DESC";
+        const jql = conditions.join(" AND ") + " ORDER BY updated DESC";
 
         const results = await client.searchIssues(jql, {
           maxResults: parseInt(opts.max, 10),
@@ -155,11 +163,27 @@ Examples:
     });
 
   issue
-    .command("transition <issueKey> <transitionId>")
-    .description("Move an issue to a new status (use 'transitions' to get IDs)")
-    .action(async (issueKey: string, transitionId: string) => {
+    .command("transition <issueKey> <nameOrId>")
+    .description("Move an issue to a new status by transition name or ID")
+    .action(async (issueKey: string, nameOrId: string) => {
       try {
         const client = new JiraClient();
+        let transitionId = nameOrId;
+
+        if (!/^\d+$/.test(nameOrId)) {
+          const result = await client.getTransitions(issueKey);
+          const match = result.transitions.find(
+            (t) => t.name.toLowerCase() === nameOrId.toLowerCase()
+          );
+          if (!match) {
+            const available = result.transitions.map((t) => `${t.id}: ${t.name}`).join(", ");
+            throw new Error(
+              `No transition named "${nameOrId}" for ${issueKey}. Available: ${available}`
+            );
+          }
+          transitionId = match.id;
+        }
+
         await client.transitionIssue(issueKey, transitionId);
         console.log(formatJson({ status: "ok", message: `Transitioned ${issueKey}` }));
       } catch (err) {
