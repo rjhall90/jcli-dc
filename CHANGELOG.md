@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/rjhall90/jcli-dc/compare/v1.2.1...v1.3.0) (2026-04-09)
+
+
+### Features
+
+* add dynamic version output from package.json via -v and --version ([709637c](https://github.com/rjhall90/jcli-dc/commit/709637c284e74c4133e02238c432309a8d8e9b6b))
+
 ## [1.2.1](https://github.com/rjhall90/jcli-dc/compare/v1.2.0...v1.2.1) (2026-04-09)
 
 
