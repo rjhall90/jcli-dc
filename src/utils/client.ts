@@ -67,6 +67,25 @@ export class JiraClient {
     return (await response.json()) as T;
   }
 
+  async requestRaw(url: string): Promise<Buffer> {
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${this.config.token}` },
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Jira API error ${response.status} ${response.statusText}`
+      );
+    }
+
+    return Buffer.from(await response.arrayBuffer());
+  }
+
+  async downloadAttachment(attachment: JiraAttachment): Promise<string> {
+    const buffer = await this.requestRaw(attachment.content);
+    return `data:${attachment.mimeType};base64,${buffer.toString("base64")}`;
+  }
+
   // Core API v2
   async getIssue(
     issueIdOrKey: string,
@@ -103,6 +122,7 @@ export class JiraClient {
           "resolution",
           "labels",
           "comment",
+          "attachment",
         ],
         maxResults: opts.maxResults ?? 50,
         startAt: opts.startAt ?? 0,
@@ -311,7 +331,20 @@ export interface JiraIssue {
         updated: string;
       }>;
     };
+    attachment?: JiraAttachment[];
   };
+}
+
+export interface JiraAttachment {
+  id: string;
+  self: string;
+  filename: string;
+  author: { displayName: string; name: string };
+  created: string;
+  size: number;
+  mimeType: string;
+  content: string;
+  thumbnail?: string;
 }
 
 export interface SearchResults {

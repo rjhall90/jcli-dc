@@ -1,11 +1,11 @@
 import { Command } from "commander";
-import { JiraClient } from "../utils/client.js";
+import { JiraClient, type JiraAttachment } from "../utils/client.js";
 import { formatIssueList, formatIssueDetail, formatJson } from "../utils/format.js";
 
 const DEFAULT_DETAIL_FIELDS = [
   "summary", "status", "assignee", "reporter", "priority", "issuetype",
   "created", "updated", "description", "comment", "fixVersions",
-  "resolution", "labels",
+  "resolution", "labels", "attachment",
 ].join(",");
 
 export function registerIssueCommands(program: Command): void {
@@ -26,6 +26,8 @@ Examples:
   $ jcli issue transitions PROJ-123                        # list available moves
   $ jcli issue transition PROJ-123 "In Progress"           # transition by name
   $ jcli issue transition PROJ-123 31                      # transition by ID
+  $ jcli issue attachment PROJ-123 screenshot.png          # download an attachment
+  $ jcli issue attachment PROJ-123 --images                # download all images
 `
     );
 
@@ -201,6 +203,65 @@ Examples:
         const client = new JiraClient();
         await client.assignIssue(issueKey, username);
         console.log(formatJson({ status: "ok", message: `Assigned ${issueKey} to ${username}` }));
+      } catch (err) {
+        console.error("Error:", (err as Error).message);
+        process.exit(1);
+      }
+    });
+
+  issue
+    .command("attachment <issueKey> [filenames...]")
+    .alias("att")
+    .description("Download issue attachments by filename and return base64 data URIs")
+    .option("--images", "Download all image attachments")
+    .addHelpText(
+      "after",
+      `
+Examples:
+  $ jcli issue attachment SL-4358 screenshot.png           # download one file
+  $ jcli issue attachment SL-4358 img1.png img2.png        # download multiple
+  $ jcli issue attachment SL-4358 --images                 # download all images
+`
+    )
+    .action(async (issueKey: string, filenames: string[], opts: { images?: boolean }) => {
+      try {
+        const client = new JiraClient();
+        const issue = await client.getIssue(issueKey, "attachment");
+        const attachments = (issue.fields.attachment ?? []) as JiraAttachment[];
+
+        if (!attachments.length) {
+          console.log(formatJson({ issueKey, attachments: [] }));
+          return;
+        }
+
+        let targets: JiraAttachment[];
+        if (opts.images) {
+          targets = attachments.filter((a) => a.mimeType.startsWith("image/"));
+        } else if (filenames.length) {
+          const nameSet = new Set(filenames.map((f) => f.toLowerCase()));
+          targets = attachments.filter((a) => nameSet.has(a.filename.toLowerCase()));
+          const found = new Set(targets.map((a) => a.filename.toLowerCase()));
+          const missing = filenames.filter((f) => !found.has(f.toLowerCase()));
+          if (missing.length) {
+            const available = attachments.map((a) => a.filename).join(", ");
+            throw new Error(
+              `Attachment(s) not found: ${missing.join(", ")}. Available: ${available}`
+            );
+          }
+        } else {
+          throw new Error("Specify filenames or use --images to download all image attachments");
+        }
+
+        const results = await Promise.all(
+          targets.map(async (a) => ({
+            filename: a.filename,
+            mimeType: a.mimeType,
+            size: a.size,
+            data: await client.downloadAttachment(a),
+          }))
+        );
+
+        console.log(formatJson({ issueKey, attachments: results }));
       } catch (err) {
         console.error("Error:", (err as Error).message);
         process.exit(1);

@@ -1,4 +1,4 @@
-import type { JiraIssue, JiraVersion, JiraStatus, JiraStatusCategory, JiraEpic } from "./client.js";
+import type { JiraIssue, JiraAttachment, JiraVersion, JiraStatus, JiraStatusCategory, JiraEpic } from "./client.js";
 
 export function formatJson(data: unknown): string {
   return JSON.stringify(data, null, 2);
@@ -29,6 +29,10 @@ export function formatIssueList(issues: JiraIssue[]): string {
 
       const comment = issue.fields.comment;
       entry.commentCount = comment?.total ?? comment?.comments?.length ?? 0;
+
+      const attachments = issue.fields.attachment ?? [];
+      entry.attachmentCount = attachments.length;
+      entry.imageCount = attachments.filter((a) => a.mimeType.startsWith("image/")).length;
 
       return entry;
     })
@@ -73,6 +77,20 @@ export function formatIssueDetail(issue: JiraIssue): string {
       author: c.author.displayName,
       body: c.body,
       created: c.created,
+    }));
+  }
+
+  const attachments = fields.attachment as JiraAttachment[] | undefined;
+  if (attachments?.length) {
+    detail.attachmentCount = attachments.length;
+    detail.imageCount = attachments.filter((a) => a.mimeType.startsWith("image/")).length;
+    detail.attachments = attachments.map((a) => ({
+      id: a.id,
+      filename: a.filename,
+      mimeType: a.mimeType,
+      size: a.size,
+      author: a.author.displayName,
+      created: a.created,
     }));
   }
 
