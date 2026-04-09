@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/rjhall90/jcli-dc/compare/v1.1.0...v1.2.0) (2026-04-09)
+
+
+### Features
+
+* **issue:** add attachment metadata and download support ([0534d7c](https://github.com/rjhall90/jcli-dc/commit/0534d7cfccd189e70b8a90109b248337c0ed36f6))
+
 # [1.1.0](https://github.com/rjhall90/jcli-dc/compare/v1.0.0...v1.1.0) (2026-03-09)
 
 
