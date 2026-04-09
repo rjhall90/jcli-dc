@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/rjhall90/jcli-dc/compare/v1.2.0...v1.2.1) (2026-04-09)
+
+
+### Bug Fixes
+
+* replace process.exit with process.exitCode for graceful shutdown ([a6e0b8c](https://github.com/rjhall90/jcli-dc/commit/a6e0b8c0ae7f6aa4249c121bae4eba45c53dda1a))
+
 # [1.2.0](https://github.com/rjhall90/jcli-dc/compare/v1.1.0...v1.2.0) (2026-04-09)
 
 
