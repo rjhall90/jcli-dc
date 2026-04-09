@@ -13,10 +13,9 @@ const CONFIG_FILE = path.join(CONFIG_DIR, "config.json");
 
 export function loadConfig(): JcliConfig {
   if (!fs.existsSync(CONFIG_FILE)) {
-    console.error(
+    throw new Error(
       "No configuration found. Run: jcli config set --url <url> --token <pat>"
     );
-    process.exit(1);
   }
   const raw = fs.readFileSync(CONFIG_FILE, "utf-8");
   return JSON.parse(raw) as JcliConfig;

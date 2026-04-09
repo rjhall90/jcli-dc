@@ -43,7 +43,7 @@ Examples:
         );
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 
@@ -74,7 +74,7 @@ Examples:
         );
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 
@@ -103,7 +103,7 @@ Examples:
         );
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 }

@@ -49,7 +49,7 @@ Examples:
         console.log(formatIssueDetail(issue));
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 
@@ -82,7 +82,7 @@ Examples:
         );
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 
@@ -122,7 +122,7 @@ Examples:
         );
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 
@@ -137,7 +137,7 @@ Examples:
         console.log(formatJson({ status: "ok", message: `Comment added to ${issueKey}` }));
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 
@@ -160,7 +160,7 @@ Examples:
         );
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 
@@ -190,7 +190,7 @@ Examples:
         console.log(formatJson({ status: "ok", message: `Transitioned ${issueKey}` }));
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 
@@ -205,7 +205,7 @@ Examples:
         console.log(formatJson({ status: "ok", message: `Assigned ${issueKey} to ${username}` }));
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 
@@ -264,7 +264,7 @@ Examples:
         console.log(formatJson({ issueKey, attachments: results }));
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 }

@@ -69,7 +69,7 @@ Examples:
         );
       } catch (err) {
         console.error("Connection failed:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 }

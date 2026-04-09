@@ -36,7 +36,7 @@ Examples:
         console.log(formatEpicList(results.values));
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 
@@ -51,7 +51,7 @@ Examples:
         console.log(formatEpicDetail(result));
       } catch (err) {
         console.error("Error:", (err as Error).message);
-        process.exit(1);
+        process.exitCode = 1; return;
       }
     });
 
@@ -79,7 +79,7 @@ Examples:
           console.log(formatIssueList(results.issues));
         } catch (err) {
           console.error("Error:", (err as Error).message);
-          process.exit(1);
+          process.exitCode = 1; return;
         }
       }
     );

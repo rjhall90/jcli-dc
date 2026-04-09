@@ -45,5 +45,5 @@ registerEpicCommands(program);
 
 program.parseAsync(process.argv).catch((err) => {
   console.error("Fatal error:", err.message);
-  process.exit(1);
+  process.exitCode = 1; return;
 });
