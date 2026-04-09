@@ -8,12 +8,15 @@ import { registerReleaseCommands } from "./commands/release.js";
 import { registerStatusCommands } from "./commands/status.js";
 import { registerEpicCommands } from "./commands/epic.js";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { version } = require("../package.json") as { version: string };
+
 const program = new Command();
 
 program
   .name("jcli")
   .description("Jira Data Center CLI — lightweight issue management via PAT auth.\nAll output is JSON for easy scripting and LLM consumption.")
-  .version("1.0.0")
+  .version(version, "-v, --version")
   .addHelpText(
     "after",
     `
